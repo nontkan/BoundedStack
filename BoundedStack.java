@@ -8,14 +8,14 @@ import java.util.Set;
 // นาย นนทการณ์ สุขสวัสดิ์ 6821651400
 
 /**
- * BounderStack — ADT รายการสิ่งที่ต้องทำ
+ * BoundedStack — ADT รายการสิ่งที่ต้องทำ
  * ค่านามธรรม (A): ลำดับของรายการสิ่งที่ต้องทำ เช่น
  * "ทำการบ้าน", "อ่านหนังสือ", "ออกกำลังกาย"
  * 
  * 
  * 
  * ตัวอย่างการใช้งาน:
- *     BounderStack todo = new BounderStack();
+ *     BoundedStack todo = new BoundedStack();
  *     todo.push("ทำการบ้าน");
  *     todo.push("อ่านหนังสือ");
  *
@@ -69,23 +69,23 @@ public class BoundedStack{
     }
 
 /**
- * น
- *
- * @param tasks รายการสิ่งที่ต้องทำเริ่มต้น ต้องไม่ซ้ำและไม่เกิน MAX_TASKS
- * @throws IllegalArgumentException ถ้า tasks ผิดเงื่อนไข
- */
-public BoundedStack(List<String> tasks) {
-    if (tasks == null) {
+     * สร้าง BoundedStack ด้วยรายการเริ่มต้น
+     *
+     * @param initial รายการสิ่งที่ต้องทำเริ่มต้น
+     * @throws IllegalArgumentException ถ้ารายการผิดเงื่อนไข
+     */
+    public BoundedStack(List<String> initial) {
+    if (initial == null) {
         throw new IllegalArgumentException();
     }
-    if(tasks.size() > MAX_TASKS)throw new IllegalArgumentException() ;
+    if(initial.size() > MAX_TASKS)throw new IllegalArgumentException() ;
         Set<String> seen = new HashSet<>();
-        for (String s : tasks) {
+        for (String s : initial) {
             if(s == null)throw new IllegalArgumentException();
             if(s == " ")throw new IllegalArgumentException() ;
             if(!seen.add(s))throw new IllegalArgumentException() ;
 
-        }this.tasks = new ArrayList<>(tasks);
+        }this.tasks = new ArrayList<>(initial);
         checkRep();
     }
 
