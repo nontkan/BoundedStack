@@ -1,7 +1,3 @@
-package A;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,6 +26,27 @@ public class Testrun {
             System.out.println("WARNING: assertions disabled"
                     + " - re-run with: java -ea Testrun\n");
         }
+        System.out.println("--BoundedStack Test--");
+
+        System.out.println("\n...Running Tasks...");
+        System.out.println("Passed: " + passed);
+        System.out.println("Failed: " + failed);
+        System.out.println("Total: " + (passed + failed));
+        System.out.println(failed == 0 ? "All Tasks passed!" : "Some Tasks failed.");
+
+        if (failed > 0){
+            System.exit(1);
+        } else {
+            System.exit(0);
+        }
+
+        
+
+
+
+
+
+        
 
     }
 }
