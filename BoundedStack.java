@@ -91,23 +91,22 @@ public class BoundedStack{
     }
     /* เพิ่มวิชาไว้บนสุดของสแตก
      * 
-     * 
-     * 
+     * @param Subject ต้องไม่เป็น null และไม่เป็นสตริงว่าง
+     * @return ถ้า Subject มีอยู่แล้วในสแตก หรือสแตกเต็มแล้ว ให้โยน IllegalArgument
+     * @throws IllegalArgumentException ถ้า Subject เป็น null หรือเป็นสตริงว่าง
      */
     public void push(String Subject){
+        if(Subject == null)throw new IllegalArgumentException("Subject ต้องไม่เป็น null") ; 
+        if(Subject == " ")throw new IllegalArgumentException("Subject ต้องไม่เป็นสตริงว่าง") ;
+        if(tasks.size() >= MAX_TASKS)throw new IllegalStateException("Stack เต็มแล้ว") ;
+        if(tasks.contains(Subject))throw new IllegalArgumentException("Subject ต้องไม่ซ้ำ") ;
+        tasks.add(0, Subject);
+        checkRep();
 
+    }
 
-
-
-
-
-
+    public String pop(){
+        if(subjects.isEmpty())throw new IllegalStateException("ไม่มีรายวิชาใน Stack") ;
 
     }
 }
-
-
-  
-
-
-
