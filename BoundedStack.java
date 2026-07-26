@@ -7,6 +7,7 @@ import java.util.Set;
 
 // นาย นนทการณ์ สุขสวัสดิ์ 6821651400
 
+
 /**
  * BoundedStack — ADT รายการสิ่งที่ต้องทำ
  * ค่านามธรรม (A): ลำดับของรายการสิ่งที่ต้องทำ เช่น
@@ -88,7 +89,21 @@ public class BoundedStack{
         }this.tasks = new ArrayList<>(initial);
         checkRep();
     }
+    /* เพิ่มวิชาไว้บนสุดของสแตก
+     * 
+     * 
+     * 
+     */
+    public void push(String Subject){
 
+
+
+
+
+
+
+
+    }
 }
 
 
