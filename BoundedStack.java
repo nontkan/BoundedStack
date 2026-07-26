@@ -1,9 +1,10 @@
 package A;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
+
 
 // นาย นนทการณ์ สุขสวัสดิ์ 6821651400
 // นาย กฤษวัฒน์ ชูรัตน์ 6821651086
@@ -33,25 +34,30 @@ public class BoundedStack{
 
      private final int capacity;
 
-    // 1.Abstraction Function:
-    //   AF(tasks) = ลำดับของรายการสิ่งที่ต้องทำที่เก็บอยู่ใน tasks
-    //   เช่น tasks(รายการ) = "ทำการบ้าน", "อ่านหนังสือ" 
+// Abstraction Function (AF)
+// AF(tasks, capacity) = สแตกของรายการสิ่งที่ต้องทำ
+// 
+//
+//
+// Representation Invariant (RI)
+// 1. tasks ต้องไม่เป็น null
+// 2. capacity ต้องไม่เกิน MAX_TASKS
+// 3. สมาชิกทุกตัวใน tasks ต้องไม่เป็น null
+// 4. สมาชิกทุกตัวต้องไม่เป็นข้อความว่างหรือมีแต่ช่องว่าง
+// 5. ไม่มีรายการซ้ำ
+//
+// Safety from Rep Exposure
+// - tasks และ capacity เป็น private final
+// 
+// 
+//  
 
-    // 2.Representation Invariant:
-    //  tasks ไม่เป็น null
-    //  tasks.size() <= MAX_TASKS
-    //  ไม่มีสมาชิกเป็น null
-    //  ไม่มีข้อความว่างหรือมีแต่ช่องว่าง
 
-    // 3.Safety from rep exposure:
-    // tasks เป็น private final
-    // 
-     
-
-    /**
-     * ตรวจสอบความถูกต้องของสถานะภายในของออบเจกต์
-     * แปลง RI ทุกข้อเป็น assert หนึ่งบรรทัด พร้อมข้อความอธิบาย
-     */
+   /**
+ * ตรวจสอบว่า Representation Invariant (RI) ยังคงเป็นจริง
+ * หลังจากสร้างออบเจ็กต์หรือหลังจากมีการแก้ไขข้อมูล
+ * หากผิด จะเกิด AssertionError
+ */
     private void checkRep() {
         assert tasks != null : "tasks ไม่เป็น null ได้";
         assert tasks.size() <= MAX_TASKS : "จำนวนรายการสิ่งที่ต้องทำเกินจำนวนสูงสุดที่กำหนด";
@@ -64,10 +70,11 @@ public class BoundedStack{
 
 }
     
-    /**
+    /** ====Creator====
      * สร้าง BoundedStack ว่าง
      */
     public BoundedStack() {
+        this.capacity = MAX_TASKS;
         tasks = new ArrayList<>();
         checkRep();
 
@@ -80,27 +87,27 @@ public class BoundedStack{
         checkRep();
     }
 
-/**
+/**    ====Creator====
      * สร้าง BoundedStack ด้วยรายการเริ่มต้น
      *
      * @param initial รายการสิ่งที่ต้องทำเริ่มต้น
      * @throws IllegalArgumentException ถ้ารายการผิดเงื่อนไข
      */
     public BoundedStack(List<String> initial) {
-    if (initial == null) {
-        throw new IllegalArgumentException();
+    if (initial == null) {throw new IllegalArgumentException("รายการเริ่มต้นไม่สามารถเป็น null ได้");
     }
-    if(initial.size() > MAX_TASKS)throw new IllegalArgumentException() ;
+    if(initial.size() > MAX_TASKS)throw new IllegalArgumentException("จำนวนรายการเริ่มต้นเกินจำนวนสูงสุดที่กำหนด") ;
         Set<String> seen = new HashSet<>();
         for (String s : initial) {
-            if(s == null)throw new IllegalArgumentException();
-            if(s == " ")throw new IllegalArgumentException() ;
-            if(!seen.add(s))throw new IllegalArgumentException() ;
+            if(s == null)throw new IllegalArgumentException("รายการไม่สามารถเป็น null ได้");
+            if(s == " ")throw new IllegalArgumentException("รายการไม่สามารถเป็นสตริงว่างได้");
+            if(!seen.add(s))throw new IllegalArgumentException("รายการต้องไม่ซ้ำ");
 
         }this.tasks = new ArrayList<>(initial);
+        this.capacity = 0;
         checkRep();
     }
-    /* เพิ่มวิชาไว้บนสุดของสแตก
+    /*   ====Mutator====
      * 
      * @param Subject ต้องไม่เป็น null และไม่เป็นสตริงว่าง
      * @return ถ้า Subject มีอยู่แล้วให้โยน IllegalArgument
@@ -109,21 +116,85 @@ public class BoundedStack{
     public void push(String Subject){
         if(Subject == null)throw new IllegalArgumentException("Subject ต้องไม่เป็น null") ; 
         if(Subject == " ")throw new IllegalArgumentException("Subject ต้องไม่เป็นสตริงว่าง") ;
-        if(tasks.size() >= MAX_TASKS)throw new IllegalStateException("Stack เต็มแล้ว") ;
-        if(tasks.contains(Subject))throw new IllegalArgumentException("Subject ต้องไม่ซ้ำ") ;
-        tasks.add(0, Subject);
+        String cleanedSubject = Subject.trim();
+        if(tasks.size() >= capacity)throw new IllegalStateException("Stack เต็มแล้ว") ;
+        if(tasks.contains(cleanedSubject))throw new IllegalArgumentException("Subject ต้องไม่ซ้ำ") ;
+        tasks.add(cleanedSubject);
         checkRep();
 
     }
 
-    public String pop(){
-        if(tasks.isEmpty())throw new IllegalStateException("ไม่มีรายวิชาใน Stack") ;
-        int topindex = tasks.size() - 1;
-        String removedSubject = tasks.remove(topindex);
+    public String pop() {
+        if (tasks.isEmpty()) throw new IllegalStateException("ไม่มีรายวิชาใน Stack");
+        String removedTask = tasks.remove(tasks.size() - 1); // นำออกจากท้าย list = บนสุดของสแตก
         checkRep();
-        return removedSubject;
+        return removedTask;
     }
-
-
-
+    public void clear() {
+        tasks.clear();
+        checkRep();
+    }
+/*     ====Producer====
+ * 
+ * 
+ */
+public BoundedStack copy() {
+    BoundedStack newStack = new BoundedStack();
+    newStack.tasks.addAll(this.tasks);
+    checkRep();
+    return newStack;
 }
+    /*   ====Observer====
+    *
+    *
+    */
+  public String peek() {
+    if (tasks.isEmpty()) {
+        throw new NoSuchElementException("Stack ว่าง");
+    }
+
+    return tasks.get(tasks.size() - 1);
+}
+/**
+ * 
+ *
+ * 
+ */
+public int size() {
+    return tasks.size();
+}
+/**
+ * 
+ *
+ * 
+ *         
+ */
+public boolean isEmpty() {
+    return tasks.isEmpty();
+}
+/**
+ * 
+ * 
+ *         
+ */
+public boolean isFull() {
+    return tasks.size() == capacity;
+}
+/**
+ * 
+ *
+ * 
+ */
+public List<String> tasks() {
+    return new ArrayList<>(tasks);
+}
+}
+
+
+
+
+
+
+
+
+
