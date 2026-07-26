@@ -106,7 +106,12 @@ public class BoundedStack{
     }
 
     public String pop(){
-        if(subjects.isEmpty())throw new IllegalStateException("ไม่มีรายวิชาใน Stack") ;
-
+        if(tasks.isEmpty())throw new IllegalStateException("ไม่มีรายวิชาใน Stack") ;
+        int topindex = tasks.size() - 1;
+        String removedSubject = tasks.remove(topindex);
+        tasks.remove(tasks);
+        checkRep();
+        return removedSubject;
     }
+    
 }
