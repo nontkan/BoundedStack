@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 // นาย นนทการณ์ สุขสวัสดิ์ 6821651400
+// นาย กฤษวัฒน์ ชูรัตน์ 6821651086
 
 
 /**
@@ -30,6 +31,8 @@ public class BoundedStack{
 
      private final List<String> tasks;
 
+     private final int capacity;
+
     // 1.Abstraction Function:
     //   AF(tasks) = ลำดับของรายการสิ่งที่ต้องทำที่เก็บอยู่ใน tasks
     //   เช่น tasks(รายการ) = "ทำการบ้าน", "อ่านหนังสือ" 
@@ -43,7 +46,7 @@ public class BoundedStack{
     // 3.Safety from rep exposure:
     // tasks เป็น private final
     // 
-    
+     
 
     /**
      * ตรวจสอบความถูกต้องของสถานะภายในของออบเจกต์
@@ -58,6 +61,7 @@ public class BoundedStack{
         assert task != "  " : "รายการต้องไม่เป็นข้อความว่าง";
         assert seen.add(task):"ห้ามมีรายการซ้ำ";
     }
+
 }
     
     /**
@@ -67,6 +71,13 @@ public class BoundedStack{
         tasks = new ArrayList<>();
         checkRep();
 
+    }
+
+    public BoundedStack(int capacity) {
+        if (capacity <= 0) throw new IllegalArgumentException("capacity ต้องเป็นค่าบวก");
+        this.capacity = capacity;
+        tasks = new ArrayList<>();
+        checkRep();
     }
 
 /**
@@ -92,7 +103,7 @@ public class BoundedStack{
     /* เพิ่มวิชาไว้บนสุดของสแตก
      * 
      * @param Subject ต้องไม่เป็น null และไม่เป็นสตริงว่าง
-     * @return ถ้า Subject มีอยู่แล้วในสแตก หรือสแตกเต็มแล้ว ให้โยน IllegalArgument
+     * @return ถ้า Subject มีอยู่แล้วให้โยน IllegalArgument
      * @throws IllegalArgumentException ถ้า Subject เป็น null หรือเป็นสตริงว่าง
      */
     public void push(String Subject){
@@ -109,9 +120,10 @@ public class BoundedStack{
         if(tasks.isEmpty())throw new IllegalStateException("ไม่มีรายวิชาใน Stack") ;
         int topindex = tasks.size() - 1;
         String removedSubject = tasks.remove(topindex);
-        tasks.remove(tasks);
         checkRep();
         return removedSubject;
     }
-    
+
+
+
 }
