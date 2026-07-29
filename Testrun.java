@@ -3,6 +3,10 @@ import java.util.Arrays;
 
 /**
  * Testrun
+ * ตัวรัน test สำหรับ BoundedStack — เขียนขึ้นเองทั้งหมดตาม C4
+ * พิมพ์ผล PASS/FAIL ของแต่ละเคส และสรุปจำนวนรวมเมื่อจบการทำงาน
+ * แบ่งฟังก์ชันทดสอบตามบทบาท
+ * invariant สำคัญของ ADT เพื่อให้เห็นเหตุผลของแต่ละกลุ่มเคสชัดเจน
  */
 public class Testrun {
 
@@ -19,8 +23,11 @@ public class Testrun {
             System.out.println("[FAIL] " + name);
         }
     }
-
+ 
+    // ---------- main ----------
+    // จุดเริ่มต้นการทำงานของโปรแกรม
     public static void main(String[] args) {
+        // ตรวจสอบว่า assertion ถูกเปิดใช้งานหรือไม่
         boolean assertsOn = false;
         assert assertsOn = true;
         if (!assertsOn) {
@@ -29,8 +36,7 @@ public class Testrun {
         }
         testBoundedStack();
 
-        System.out.println("\n--BoundedStack Test--");
-
+        System.out.println("\n---BoundedStack Test---");
         System.out.println("...Running Tasks...");
         System.out.println("Passed: " + passed);
         System.out.println("Failed: " + failed);
@@ -44,8 +50,10 @@ public class Testrun {
         } 
 
     }
+
+    // เรียกฟังก์ชันทดสอบย่อยทั้งหมด
     private static void testBoundedStack(){
-        System.out.println("\n--BoundedStack Test--");
+        System.out.println("\n---BoundedStack Test---");
 
         testCreator();
         testPush();
@@ -59,14 +67,15 @@ public class Testrun {
 
     // ---------- Creator ----------
     // ทดสอบ constructor ของ BoundedStack ว่าทำงานถูกต้องหรือไม่
+    // ทดสอบว่า object ที่สร้างเสร็จมี state เริ่มต้นถูกต้องตาม RI ทุกกรณี
 
     private static void testCreator() {
         BoundedStack s = new BoundedStack(5);
-        check("new(capacity) -> ขนาดเริ่มต้นเป็น 0", s.size() == 0);
+        check("new(capacity) -> initial size is 0", s.size() == 0);
         check("new(capacity) -> isEmpty = true", s.isEmpty());
 
         BoundedStack s1 = new BoundedStack(1);
-        check("new(capacity=1) -> ขนาดเริ่มต้นเป็น 0", s1.size() == 0);
+        check("new(capacity=1) -> initial size is 0", s1.size() == 0);
 
         try {
             new BoundedStack(0);
@@ -82,10 +91,10 @@ public class Testrun {
             check("new(capacity=-1) -> throws", true);
         }
 
+        // ตรงนี้จะ FAIL ถ้า capacity ยังถูก set = 0
         BoundedStack fromList = new BoundedStack(Arrays.asList("A", "B", "C"));
         check("new(initial list) -> size = 3", fromList.size() == 3); 
-        check("new(initial list) -> isFull false เมื่อยังไม่เต็ม", !fromList.isFull());
-        // ตรงนี้จะ FAIL ถ้า capacity ยังถูก set = 0
+        check("new(initial list) -> isFull is false when not full", !fromList.isFull());
     }
 
     // ---------- Mutator: push ----------
@@ -95,48 +104,51 @@ public class Testrun {
     private static void testPush() {
         BoundedStack s = new BoundedStack(2);
         s.push("A");
-        check("push ครั้งเดียว -> size 1", s.size() == 1);
+        check("push once -> size is 1", s.size() == 1);
 
+        // push จนเต็มพอดีตาม capacity
         s.push("B");
-        check("push จนเต็มพอดี -> size == capacity", s.size() == 2);
-        check("push จนเต็ม -> isFull = true", s.isFull());
-
+        check("push to full -> size == capacity", s.size() == 2);
+        check("push to full -> isFull = true", s.isFull());
+        
+        // push ตอนเต็มแล้วต้อง throw exception
         try {
             s.push("C");
-            check("push ตอนเต็มแล้ว -> throws", false);
+            check("push when full -> throws", false);
         } catch (IllegalStateException e) {
-            check("push ตอนเต็มแล้ว -> throws", true);
+            check("push when full -> throws", true);
         }
-
+        
+        // push null ต้อง throw exception
         try {
             s.push(null);
-            check("push ค่า null -> throws", false);
+            check("push null -> throws", false);
         } catch (IllegalArgumentException e) {
-            check("push ค่า null -> throws", true);
+            check("push null -> throws", true);
         }
 
         // จุดนี้จะ FAIL ถ้าเช็ค blank ยังใช้ == แทน .isEmpty()
         try {
             new BoundedStack(3).push("   ");
-            check("push ข้อความเว้นวรรค -> throws", false);
+            check("push blank(spaces) -> throws", false);
         } catch (IllegalArgumentException e) {
-            check("push ข้อความเว้นวรรค -> throws", true);
+            check("push blank(spaces) -> throws", true);
         }
-
+        
         try {
             new BoundedStack(3).push("");
-            check("push ข้อความว่างเปล่า -> throws", false);
+            check("push empty string -> throws", false);
         } catch (IllegalArgumentException e) {
-            check("push ข้อความว่างเปล่า -> throws", true);
+            check("push empty string -> throws", true);
         }
 
         BoundedStack dup = new BoundedStack(3);
         dup.push("A");
         try {
             dup.push("A");
-            check("push ค่าซ้ำ -> throws", false);
+            check("push duplicate -> throws", false);
         } catch (IllegalArgumentException e) {
-            check("push ค่าซ้ำ -> throws", true);
+            check("push duplicate -> throws", true);
         }
     }
 
@@ -150,41 +162,45 @@ public class Testrun {
         s.push("B");
 
         String top = s.pop();
-        check("pop คืนค่าตัวที่ push ล่าสุด", top.equals("B"));
-        check("pop -> ขนาดลดลง", s.size() == 1);
-
+        check("pop returns last pushed", top.equals("B"));
+        check("pop -> size decreases", s.size() == 1);
+        
+        // pop จนเหลือ 0 พอดี
         s.pop();
-        check("pop จนว่าง -> size 0", s.size() == 0);
-
+        check("pop to empty -> size is 0", s.size() == 0);
+        
+        // pop ตอนว่างแล้วต้อง throw exception
         try {
             s.pop();
-            check("pop ตอนว่าง -> throws", false);
+            check("pop when empty -> throws", false);
         } catch (IllegalStateException e) {
-            check("pop ตอนว่าง -> throws", true);
+            check("pop when empty -> throws", true);
         }
     }
 
     // ---------- Observer ----------
-    // เอาไว้ทดสอบเมธอดที่ ดูข้อมูล แต่ไม่แก้ไขข้อมูล เช่น peek(), isEmpty(), isFull(), size()
+    // เอาไว้ทดสอบเมธอดที่ดูข้อมูล เช่น peek(), isEmpty(), isFull(), size()
     
     private static void testObserver() {
         BoundedStack s = new BoundedStack(3);
-        check("stack ว่าง -> isEmpty เป็น true", s.isEmpty());
-        check("stack ว่าง -> isFull เป็น false", !s.isFull());
+        check("empty stack -> isEmpty is true", s.isEmpty());
+        check("empty stack -> isFull is false", !s.isFull());
 
         s.push("A");
-        check("หลัง push -> isEmpty เป็น false", !s.isEmpty());
-        check("หลัง push -> ขนาดเป็น 1", s.size() == 1);
-
+        check("after push -> isEmpty is false", !s.isEmpty());
+        check("after push -> size is 1", s.size() == 1);
+        
+        // peek ต้องคืนค่าตัวบนสุดโดยไม่ลบออก
         String peeked = s.peek();
-        check("peek คืนค่าตัวบนสุด", peeked.equals("A"));
-        check("peek ไม่ลบข้อมูล -> ขนาดเป็น 1", s.size() == 1);
-
+        check("peek returns top element", peeked.equals("A"));
+        check("peek does not mutate -> size still 1", s.size() == 1);
+        
+        // peek ตอน stack ว่าง
         try {
             new BoundedStack(1).peek();
-            check("peek ตอนว่าง -> ต้อง throw", false);
+            check("peek on empty -> throws", false);
         } catch (NoSuchElementException e) {
-            check("peek ตอนว่าง -> ต้อง throw", true);
+            check("peek on empty -> throws", true);
         }
     }
 
@@ -196,21 +212,25 @@ public class Testrun {
         s.push("A");
 
         BoundedStack copy = s.copy();
-        check("copy() -> ขนาดเท่ากับต้นฉบับ", copy.size() == s.size());
-        check("copy() -> เป็นคนละ object กับต้นฉบับ", copy != s);
+        check("copy() -> same size as original", copy.size() == s.size());
 
-        // เคสนี้จะ FAIL ถ้า copy() ยังใช้ new BoundedStack() (capacity=100 ตายตัว)
+        // ต้องเป็นคนละ object
+        check("copy() -> different object identity", copy != s);
+
+        // จุดนี้จะ FAIL ถ้า copy() ยังใช้ new BoundedStack() (capacity=100 ตายตัว)
         // แทนที่จะคง capacity เดิมไว้ (=2)
         copy.push("B");
-        check("copy() -> คง capacity เดิมไว้", copy.isFull());
+        check("copy() -> preserves original capacity", copy.isFull());
 
+        // แก้ copy แล้วต้นฉบับต้องไม่กระทบ 
         copy.pop();
         copy.pop();
-        check("copy() -> แก้ copy แล้วต้นฉบับจะไม่กระทบ", s.size() == 1);
+        check("copy() -> mutating copy does not affect original", s.size() == 1);
     }
 
     // ---------- ลำดับแบบ LIFO ----------
     // ทดสอบพฤติกรรมของสแตกโดยตรง ไม่ใช่แค่ค่าที่ได้ทีละตัว เช่น push A, push B, push C แล้ว pop จะได้ C, B, A ตามลำดับ
+    // เป็นเทสระดับพฤติกรรมรวม 
 
     private static void testLifoOrder() {
         BoundedStack s = new BoundedStack(3);
@@ -218,10 +238,10 @@ public class Testrun {
         s.push("B");
         s.push("C");
 
-        check("ลำดับ LIFO: pop ครั้งที่ 1", s.pop().equals("C"));
-        check("ลำดับ LIFO: pop ครั้งที่ 2", s.pop().equals("B"));
-        check("ลำดับ LIFO: pop ครั้งที่ 3", s.pop().equals("A"));
-        check("ลำดับ LIFO: ว่างหลัง pop ครบ", s.isEmpty());
+        check("LIFO order: 1st pop", s.pop().equals("C"));
+        check("LIFO order: 2nd pop", s.pop().equals("B"));
+        check("LIFO order: 3rd pop", s.pop().equals("A"));
+        check("LIFO order: empty after popping all", s.isEmpty());
     }
 
     // ---------- Capacity invariant (ตรงกับ RI ที่ checkRep ควรตรวจ) ----------
@@ -229,17 +249,17 @@ public class Testrun {
     private static void testCapacityInvariant() {
         BoundedStack s = new BoundedStack(1);
         s.push("A");
-        check("size ไม่เกิน capacity เสมอ", s.size() <= 1);
+        check("size never exceeds capacity", s.size() <= 1);
 
         try {
             s.push("B");
-            check("push เกิน capacity=1 -> ต้อง throw", false);
+            check("push beyond capacity=1 -> throws", false);
         } catch (IllegalStateException e) {
-            check("push เกิน capacity=1 -> ต้อง throw", true);
+            check("push beyond capacity=1 -> throws", true);
         }
     }
 }
-// ค่อยมาแก้ต่อ ขก. 
+
 
     
 
