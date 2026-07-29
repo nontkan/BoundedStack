@@ -92,7 +92,7 @@ public class Testrun {
         }
 
         // ตรงนี้จะ FAIL ถ้า capacity ยังถูก set = 0
-        BoundedStack fromList = new BoundedStack(Arrays.asList("A", "B", "C"));
+        BoundedStack fromList = new BoundedStack(Arrays.asList("ทำการบ้าน", "อ่านหนังสือ", "ออกกำลังกาย"));
         check("new(initial list) -> size = 3", fromList.size() == 3); 
         check("new(initial list) -> isFull is false when not full", !fromList.isFull());
     }
@@ -103,17 +103,17 @@ public class Testrun {
 
     private static void testPush() {
         BoundedStack s = new BoundedStack(2);
-        s.push("A");
+        s.push("ทำการบ้าน");
         check("push once -> size is 1", s.size() == 1);
 
         // push จนเต็มพอดีตาม capacity
-        s.push("B");
+        s.push("อ่านหนังสือ");
         check("push to full -> size == capacity", s.size() == 2);
         check("push to full -> isFull = true", s.isFull());
         
         // push ตอนเต็มแล้วต้อง throw exception
         try {
-            s.push("C");
+            s.push("ออกกำลังกาย");
             check("push when full -> throws", false);
         } catch (IllegalStateException e) {
             check("push when full -> throws", true);
@@ -143,9 +143,9 @@ public class Testrun {
         }
 
         BoundedStack dup = new BoundedStack(3);
-        dup.push("A");
+        dup.push("ทำการบ้าน");
         try {
-            dup.push("A");
+            dup.push("ทำการบ้าน");
             check("push duplicate -> throws", false);
         } catch (IllegalArgumentException e) {
             check("push duplicate -> throws", true);
@@ -158,11 +158,11 @@ public class Testrun {
 
     private static void testPop() {
         BoundedStack s = new BoundedStack(3);
-        s.push("A");
-        s.push("B");
+        s.push("ทำการบ้าน");
+        s.push("อ่านหนังสือ");
 
         String top = s.pop();
-        check("pop returns last pushed", top.equals("B"));
+        check("pop returns last pushed", top.equals("อ่านหนังสือ"));
         check("pop -> size decreases", s.size() == 1);
         
         // pop จนเหลือ 0 พอดี
@@ -186,13 +186,13 @@ public class Testrun {
         check("empty stack -> isEmpty is true", s.isEmpty());
         check("empty stack -> isFull is false", !s.isFull());
 
-        s.push("A");
+        s.push("ทำการบ้าน");
         check("after push -> isEmpty is false", !s.isEmpty());
         check("after push -> size is 1", s.size() == 1);
         
         // peek ต้องคืนค่าตัวบนสุดโดยไม่ลบออก
         String peeked = s.peek();
-        check("peek returns top element", peeked.equals("A"));
+        check("peek returns top element", peeked.equals("ทำการบ้าน"));
         check("peek does not mutate -> size still 1", s.size() == 1);
         
         // peek ตอน stack ว่าง
@@ -209,7 +209,7 @@ public class Testrun {
 
     private static void testProducer() {
         BoundedStack s = new BoundedStack(2);
-        s.push("A");
+        s.push("ทำการบ้าน");
 
         BoundedStack copy = s.copy();
         check("copy() -> same size as original", copy.size() == s.size());
@@ -234,13 +234,13 @@ public class Testrun {
 
     private static void testLifoOrder() {
         BoundedStack s = new BoundedStack(3);
-        s.push("A");
-        s.push("B");
-        s.push("C");
+        s.push("ทำการบ้าน");
+        s.push("อ่านหนังสือ");
+        s.push("ออกกำลังกาย");
 
-        check("LIFO order: 1st pop", s.pop().equals("C"));
-        check("LIFO order: 2nd pop", s.pop().equals("B"));
-        check("LIFO order: 3rd pop", s.pop().equals("A"));
+        check("LIFO order: 1st pop", s.pop().equals("ออกกำลังกาย"));
+        check("LIFO order: 2nd pop", s.pop().equals("อ่านหนังสือ"));
+        check("LIFO order: 3rd pop", s.pop().equals("ทำการบ้าน"));
         check("LIFO order: empty after popping all", s.isEmpty());
     }
 
@@ -248,11 +248,11 @@ public class Testrun {
     // เอาไว้ทดสอบ RI ของ BoundedStack ว่าขนาดไม่เกิน capacity เสมอ 
     private static void testCapacityInvariant() {
         BoundedStack s = new BoundedStack(1);
-        s.push("A");
+        s.push("ทำการบ้าน");
         check("size never exceeds capacity", s.size() <= 1);
 
         try {
-            s.push("B");
+            s.push("อ่านหนังสือ");
             check("push beyond capacity=1 -> throws", false);
         } catch (IllegalStateException e) {
             check("push beyond capacity=1 -> throws", true);
