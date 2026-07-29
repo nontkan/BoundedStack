@@ -104,7 +104,7 @@ public class BoundedStack{
             if(!seen.add(s))throw new IllegalArgumentException("รายการต้องไม่ซ้ำ");
 
         }this.tasks = new ArrayList<>(initial);
-        this.capacity = 0;
+        this.capacity = MAX_TASKS;
         checkRep();
     }
     /*   ====Mutator====
@@ -115,11 +115,11 @@ public class BoundedStack{
      */
     public void push(String Subject){
         if(Subject == null)throw new IllegalArgumentException("Subject ต้องไม่เป็น null") ; 
-        if(Subject == " ")throw new IllegalArgumentException("Subject ต้องไม่เป็นสตริงว่าง") ;
-        String cleanedSubject = Subject.trim();
+        String cleaned = Subject.trim();
+         if (cleaned.isEmpty())throw new IllegalArgumentException("Subject ต้องไม่เป็นสตริงว่าง") ;
         if(tasks.size() >= capacity)throw new IllegalStateException("Stack เต็มแล้ว") ;
-        if(tasks.contains(cleanedSubject))throw new IllegalArgumentException("Subject ต้องไม่ซ้ำ") ;
-        tasks.add(cleanedSubject);
+        if(tasks.contains(cleaned))throw new IllegalArgumentException("Subject ต้องไม่ซ้ำ") ;
+        tasks.add(cleaned);
         checkRep();
 
     }
@@ -139,9 +139,9 @@ public class BoundedStack{
  * 
  */
 public BoundedStack copy() {
-    BoundedStack newStack = new BoundedStack();
+   BoundedStack newStack = new BoundedStack(this.capacity);
     newStack.tasks.addAll(this.tasks);
-    checkRep();
+    newStack.checkRep();
     return newStack;
 }
     /*   ====Observer====
