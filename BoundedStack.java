@@ -1,4 +1,3 @@
-package A;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,12 +47,10 @@ public class BoundedStack{
 //
 // Safety from Rep Exposure
 // - tasks และ capacity เป็น private final
-// 
-// 
-//  
 
 
-   /**
+
+/**
  * ตรวจสอบว่า Representation Invariant (RI) ยังคงเป็นจริง
  * หลังจากสร้างออบเจ็กต์หรือหลังจากมีการแก้ไขข้อมูล
  * หากผิด จะเกิด AssertionError
@@ -88,11 +85,12 @@ public class BoundedStack{
     }
 
 /**    ====Creator====
-     * สร้าง BoundedStack ด้วยรายการเริ่มต้น
-     *
-     * @param initial รายการสิ่งที่ต้องทำเริ่มต้น
-     * @throws IllegalArgumentException ถ้ารายการผิดเงื่อนไข
-     */
+ * สร้าง BoundedStack ว่างตามความจุที่กำหนด
+ * @param capacity จำนวนรายการสูงสุดที่สแตกสามารถเก็บได้
+ * @requires capacity ต้องเป็นค่าบวก
+ * @effects สร้างสแตกใหม่ที่ไม่มีรายการ และมีความจุเท่ากับ capacity
+ * @throws IllegalArgumentException ถ้า capacity น้อยกว่าหรือเท่ากับ 0
+ */
     public BoundedStack(List<String> initial) {
     if (initial == null) {throw new IllegalArgumentException("รายการเริ่มต้นไม่สามารถเป็น null ได้");
     }
@@ -107,9 +105,9 @@ public class BoundedStack{
         this.capacity = MAX_TASKS;
         checkRep();
     }
-    /*   ====Mutator====
-     * 
-     * @param Subject ต้องไม่เป็น null และไม่เป็นสตริงว่าง
+    /**   ====Mutator====
+     * @param Subject รายการสิ่งที่ต้องการเ
+     * @requires Subject ต้องไม่เป็น null ไม่เป็นข้อความว่าง และต้องไม่ซ้ำกับรายการที่มีอยู่
      * @return ถ้า Subject มีอยู่แล้วให้โยน IllegalArgument
      * @throws IllegalArgumentException ถ้า Subject เป็น null หรือเป็นสตริงว่าง
      */
@@ -123,30 +121,44 @@ public class BoundedStack{
         checkRep();
 
     }
-
+    /**
+     * นำรายการบนสุดออกจากสแตกและคืนค่ารายการนั้น
+    * @effects ลบรายการบนสุดของสแตก
+    * @return รายการที่ถูกนำออกจากบนสุดของสแตก
+    * @throws IllegalStateException ถ้าสแตกว่าง
+ */
     public String pop() {
         if (tasks.isEmpty()) throw new IllegalStateException("ไม่มีรายวิชาใน Stack");
         String removedTask = tasks.remove(tasks.size() - 1); // นำออกจากท้าย list = บนสุดของสแตก
         checkRep();
         return removedTask;
     }
+    /**
+     * ลบรายการทั้งหมดออกจากสแตก
+     * @effects ทำให้สแตกว่างและมีขนาดเท่ากับ 0
+     */ 
     public void clear() {
         tasks.clear();
         checkRep();
     }
-/*     ====Producer====
- * 
- * 
+/**     ====Producer====
+ สร้างสำเนาของ BoundedStack ปัจจุบัน
+ * @effects สร้าง BoundedStack ใหม่ที่มีข้อมูลเหมือนกับสแตกปัจจุบัน
+ * @return BoundedStack ใหม่ที่มีข้อมูลเหมือนกับสแตกปัจจุบัน
+ * @effects ไม่เปลี่ยนแปลงข้อมูลของสแตกเดิม
  */
+
 public BoundedStack copy() {
    BoundedStack newStack = new BoundedStack(this.capacity);
     newStack.tasks.addAll(this.tasks);
     newStack.checkRep();
     return newStack;
 }
-    /*   ====Observer====
-    *
-    *
+    /**     ====Observer====
+     คืนรายการที่อยู่บนสุดของสแตก โดยไม่ลบ
+    * @return รายการบนสุดของสแตก
+    * @effects ไม่เปลี่ยนแปลงข้อมูลในสแตก
+    * @throws NoSuchElementException ถ้าสแตกว่าง
     */
   public String peek() {
     if (tasks.isEmpty()) {
@@ -156,44 +168,41 @@ public BoundedStack copy() {
     return tasks.get(tasks.size() - 1);
 }
 /**
- * 
- *
- * 
+ * คืนค่าจำนวนรายการในสแตก
+ * @effects ไม่เปลี่ยนแปลงข้อมูลในสแตก
+ * @return จำนวนรายการในสแตก
  */
 public int size() {
     return tasks.size();
 }
 /**
- * 
- *
- * 
- *         
- */
+ * ตรวจสอบว่าสแตกว่างหรือไม่
+ * @effects ไม่เปลี่ยนแปลงข้อมูลในสแตก
+ * @return true ถ้าสแตกว่าง, false ถ้าไม่ใช่
+ */       
+ 
 public boolean isEmpty() {
     return tasks.isEmpty();
 }
 /**
- * 
- * 
- *         
+ * ตรวจสอบว่าสแตกเต็มหรือไม่
+ * @effects ไม่เปลี่ยนแปลงข้อมูลในสแตก
+ * @return true ถ้าสแตกเต็ม, false ถ้าไม่ใช่
  */
 public boolean isFull() {
     return tasks.size() == capacity;
 }
 /**
- * 
- *
- * 
+ * คืนรายการทั้งหมดในสแตก
+ * สมาชิกตำแหน่งแรกเป็นรายการล่างสุด
+ * และสมาชิกตำแหน่งสุดท้ายเป็นรายการบนสุด
+ * @effects ไม่เปลี่ยนแปลงข้อมูลในสแตก
+ * @return List ใหม่ที่เป็นสำเนาของรายการภายในสแตก
  */
 public List<String> tasks() {
     return new ArrayList<>(tasks);
 }
 }
-
-
-
-
-
 
 
 
