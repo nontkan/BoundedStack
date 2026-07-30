@@ -1,0 +1,64 @@
+Design Document 
+
+ADT: BoundedStack
+BoundedStack เป็น ADT สำหรับเก็บรายการสิ่งที่ต้องทำในรูปแบบ Stack 
+
+Creator: BoundedStack()
+-Postcondition: สร้าง BoundedStack ว่าง, size() == 0, capacity == MAX_TASKS
+-Modifies: สร้างออบเจ็กต์ใหม่
+
+Creator: BoundedStack(int capacity)
+-Precondition: capacity > 0
+-Postcondition: สร้าง BoundedStack ว่าง, ความจุ = capacity
+-Modifies: สร้างออบเจ็กต์ใหม่
+-Throws: IllegalArgumentException หาก capacity <= 0
+
+Creator: BoundedStack(List<String> initial)
+-Precondition: initial != null, สมาชิกไม่เป็น null, ไม่เป็นข้อความว่าง, ไม่ซ้ำกัน และจำนวนไม่เกิน MAX_TASKS
+-Postcondition: สร้าง Stack ใหม่ที่มีข้อมูลตาม initial, capacity = MAX_TASKS
+-Modifies: สร้างออบเจ็กต์ใหม่
+-Throws: IllegalArgumentException หากข้อมูลไม่ถูกต้อง
+
+Mutator: push(String subject)
+-Precondition: subject ไม่เป็น null, ไม่เป็นข้อความว่าง, Stack ไม่เต็ม, subject ไม่ซ้ำ
+-Postcondition: เพิ่ม subject ไว้บนสุดของ Stack และจำนวนสมาชิกเพิ่มขึ้น 1
+-Modifies: this
+-Throws: IllegalArgumentException, IllegalStateException
+
+Mutator: pop()
+-Precondition: Stack ต้องไม่ว่าง
+-Postcondition: ลบข้อมูลบนสุดของ Stack และจำนวนสมาชิกลดลง 1
+-Modifies: this
+-Returns: ข้อมูลที่ถูกลบ
+-Throws: IllegalStateException
+
+Mutator: clear()
+-Postcondition: ลบข้อมูลทั้งหมดใน Stack, size() == 0
+-Modifies: this
+
+Producer: copy()
+-Postcondition: คืน BoundedStack ใหม่ที่มีข้อมูลและ capacity เหมือนต้นฉบับ
+-Returns: BoundedStack ใหม่
+
+
+Observer: peek()
+-Precondition: Stack ต้องไม่ว่าง
+-Postcondition: ไม่เปลี่ยนแปลงข้อมูลใน Stack
+-Returns: ข้อมูลบนสุดของ Stack
+-Throws: NoSuchElementException
+
+Observer: size()
+-Postcondition: ไม่เปลี่ยนแปลงข้อมูล
+-Returns: จำนวนสมาชิกใน Stack
+
+Observer: isEmpty()
+-Postcondition: ไม่เปลี่ยนแปลงข้อมูล
+-Returns: true หาก Stack ว่าง, false หากไม่ว่าง
+
+Observer: isFull()
+-Postcondition: ไม่เปลี่ยนแปลงข้อมูล
+-Returns: true หากจำนวนสมาชิกเท่ากับ capacity
+
+Observer: tasks()
+-Postcondition: คืนสำเนา (Defensive Copy) ของรายการทั้งหมดใน Stack
+-Returns: List<String> ใหม่
